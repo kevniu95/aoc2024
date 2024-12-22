@@ -1,3 +1,4 @@
+import math
 import re 
 def getInput(file_path: str):
     with open(file_path, 'r') as file:
@@ -19,23 +20,21 @@ def gridDiffToString() -> str:
     return dirDict
             
 def switchStr(val: str):
-    pattern = r"([<>]*)([v\^]*)(A)"
-    a = re.match(pattern, val)
-    return a.group(2) + a.group(1) + 'A'
-
-
-
-    
+    try:
+        pattern = r"([v\^]*)([<>]*)(A)"
+        a = re.match(pattern, val)
+        return a.group(2) + a.group(1) + 'A'
+    except:
+        return val
 
 def initNumToDirArrowDict():
     """
-    For each key on keypad, returns string for shortest path of arrow buttons
-    on direcitonal keypad to get to new number
-
+    For each key on keypad, returns string rep of possible paths
+          
     Counts press of the A button
     """
 
-    numDirDict: dict[tuple[str, str], int] = {}
+    numDirDict: dict[tuple[str, str], list[str]] = {}
 
     grid = [['7', '8', '9'],
             ['4', '5', '6'],
@@ -49,14 +48,17 @@ def initNumToDirArrowDict():
                     if grid[x][y] and grid[i][j]:
                         a, b = grid[x][y], grid[i][j]
                         x1, y1 = i - x, j - y
+                        inputArr = []
                         grid_diff_str = GRID_DIFF_TO_STRING[(x1, y1)]
-                        # if x == 3:
-                        #     grid_diff_str = switchStr(grid_diff_str)
-                        #     print(a, b)
-                        #     print(grid_diff_str)
-                        #     print()
-                            
-                        numDirDict[(a, b)] = grid_diff_str
+                        inputArr.append(grid_diff_str)
+                        grid_diff_str_2 = switchStr(grid_diff_str)
+                        if grid_diff_str_2 != grid_diff_str:
+                            inputArr.append(grid_diff_str_2)
+                        if (y == 0 ) and len(inputArr) > 1:
+                            inputArr.pop(0)
+                        if (j == 0 and x == 3) and len(inputArr) > 1:
+                            inputArr.pop(1)
+                        numDirDict[(a, b)] = inputArr
     return numDirDict
               
                     
@@ -78,81 +80,91 @@ def initDirToDirArrowDict():
                     if grid[x][y] and grid[i][j]:
                         a, b = grid[x][y], grid[i][j]
                         x1, y1 = i - x, j - y
+                        inputArr = []
                         grid_diff_str = GRID_DIFF_TO_STRING[(x1, y1)]
-                        if x == 0:
-                            grid_diff_str = switchStr(grid_diff_str)
-                            # print(a, b)
-                            # print(grid_diff_str)
-                            # print()
-                        
-                        dirDirDict[(a, b)] = grid_diff_str
+                        inputArr.append(grid_diff_str)
+                        grid_diff_str_2 = switchStr(grid_diff_str)
+                        if grid_diff_str_2 != grid_diff_str:
+                            inputArr.append(grid_diff_str_2)                        
+                        if (y == 0) and len(inputArr) > 1:
+                            inputArr.pop(0)
+                        if (j == 0 and x == 0) and len(inputArr) > 1:
+                            inputArr.pop(1)  
+                        dirDirDict[(a,b)] = inputArr
     return dirDirDict    
-      
+
+def reduceList(myList: list[str]) -> list[str]:
+    lengths = [len(line) for line in myList]
+    minLength = min(lengths)
+    finalList = []
+    for line in myList:
+        if len(line) == minLength:
+            finalList.append(line)
+    return finalList
+
+
+def convertCodeToListOfCodes(code: str, myDict : dict = None):
+    if not myDict:
+        myDict = DIR_DIR_DICT
+    strList = ['']
+    for i in range(len(code)):
+        if i + 1 < len(code):
+            outStr = myDict[(code[i], code[i + 1])]
+            newStrList = []
+            for x in range(len(strList)):
+                for y in range(len(outStr)):
+                    newStrList.append(strList[x] + outStr[y])
+            strList = newStrList
+    return strList
+            
 
 def processCode(code: str)-> str:
-    # print(code)
-    newStrList = []
+    print(f"Procesing code {code}")
+    strList = ['']
     codeInt = int(code.lstrip('0').rstrip('A'))
-    code = 'A' + code
-    for i in range(len(code)):    
-        if i + 1 < len(code):
-            outStr = NUM_DIR_DICT[(code[i], code[i + 1])]
-
-            # TODO: Update so that NUM_DIR_DICT returns 
-            # one option if going along one axis only (i.e., 0, 1 or 3, 0)
-            # if diff b/t two cells is on both axes, try <<<^^^^ vs ^^^^<<< (one axes first hten other)
-            # then need to add to list of multiple possible strings
-            # so if going from 2 to 9,
-            #    ^^> is appended and goes in a list
-            #    >^^ is appended and goes in another list
-            newStrList.append(outStr)
-    newStr = ''.join(newStrList)
-    print(newStr)
-    # print(newStr)
-
-    # newStrList1 = []
-    # code = 'A' + newStr
-    # # print(code)
-    # for i in range(len(code)):    
-    #     if i + 1 < len(code):
-    #         outStr = DIR_DIR_DICT[(code[i], code[i + 1])]
-    #         newStrList1.append(outStr)
-    # newStr = ''.join(newStrList1)
+    codes = [code]
+    codes = ['A' + code for code in codes]
+    newCodes = []
+    for code in codes:
+        aNewCode = convertCodeToListOfCodes(code, NUM_DIR_DICT)
+        newCodes.extend(aNewCode)
     
-    # newStrList2 = []
-    # code = 'A' + newStr
-    # for i in range(len(code)):    
-    #     if i + 1 < len(code):
-    #         outStr = DIR_DIR_DICT[(code[i], code[i + 1])]
-    #         newStrList2.append(outStr)
-    # newStr = ''.join(newStrList2)
-    # print(len(newStr)) 
-    # print(codeInt)
-    # return len(newStr) * codeInt
-    return 0
+    codes = ['A' + code for code in reduceList(newCodes)]
+    
+    newCodes = []
+    for code in codes:
+        aNewCode = convertCodeToListOfCodes(code, DIR_DIR_DICT)
+        newCodes.extend(aNewCode)
+    codes = ['A' + code for code in newCodes]
+    
+    newCodes = []
+    for code in codes:
+        aNewCode = convertCodeToListOfCodes(code, DIR_DIR_DICT)
+        newCodes.extend(aNewCode)
+    codes = [code for code in reduceList(newCodes)]
+    # print(codes)
+    print("Code lengths")
+    print(len(codes[0]))
+    print(codeInt)
+    return len(codes[0]) * codeInt
         
     
 
 def processCodes(code: str) -> str: 
+    print("PRocessing all codes")
     total = 0
-    for code in codes[:1]:
+    for code in codes:
         total += processCode(code)
     return total
 
-
 if __name__ == '__main__':
-    inputArray = getInput('./day21/input0.txt')
+    inputArray = getInput('./day21/input1.txt')
     codes = [i.strip() for i in inputArray]
     GRID_DIFF_TO_STRING = gridDiffToString()
     # print(inputArray)
     NUM_DIR_DICT = initNumToDirArrowDict()
+    print(NUM_DIR_DICT)
     DIR_DIR_DICT = initDirToDirArrowDict()
+    print()
+    print(DIR_DIR_DICT)
     print(processCodes(codes))
-    # switchStr('<vA')
-    # for code in codes:
-    #     processCodes(code)
-    # print(codes)
-    # grid = processInput(inputArray)
-
-
-# A<<vAA>^A>A<AA>AvAA^A<vAAA>^A

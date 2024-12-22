@@ -35,7 +35,8 @@ dirMap = {'>': (0, 1),
 #         if grid[newx][newy] == '#' or :
 #             continue
 #         elif grid[]
-        
+
+# class 
 
 def shortestPath(grid, start, end):
     s = [5, start[0], start[1]] # try with d, x, y, and d first to see if it works w/ heapify?
@@ -44,7 +45,11 @@ def shortestPath(grid, start, end):
     while q:
         curr = heapq.heappop(q)
         x, y = curr[1], curr[2]
+        for i, j in [(0,1),(0,-1),(-1,0),(1,0)]:
+            x1, y1 = x + i , y + j
+
         
+            
         
 
     

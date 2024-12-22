@@ -14,19 +14,40 @@ def processInput(inputArray: list[str]) -> tuple[list[list[int]], list[int]]:
                 grid.append([i for i in line])
     return grid
 
-
-
+def findStartEnd(grid: list[str]) -> tuple[list[int, int], list[int, int]]:
+    for row in range(len(grid)):
+        for col in range(len(grid[0])):
+            if grid[row][col] == 'E':
+                end = row, col
+            if grid[row][col] == 'S':
+                start = row, col
+    return start, end
+    
 dirMap = {'>': (0, 1),
           'v': (1, 0),
           '<': (0, -1),
           '^' : (-1, 0)}
 
-def bfsTraversal(grid: list[list[int]], start: tuple[int, int], end: tuple[int, int]):
-    x, y = start[0], start[1]
-    for dir, dirVal in dirMap.items():
-        newx, newy = x + dirVal[0], y + dirVal[1]
-        print(newx, newy)
+# def bfsTraversal(grid: list[list[int]], start: tuple[int, int], end: tuple[int, int]):
+#     x, y = start[0], start[1]
+#     for dir, dirVal in dirMap.items():
+#         newx, newy = x + dirVal[0], y + dirVal[1]
+#         if grid[newx][newy] == '#' or :
+#             continue
+#         elif grid[]
         
+
+def shortestPath(grid, start, end):
+    s = [5, start[0], start[1]] # try with d, x, y, and d first to see if it works w/ heapify?
+    q = []
+    heapq.heappush(q, s)
+    while q:
+        curr = heapq.heappop(q)
+        x, y = curr[1], curr[2]
+        
+        
+
+    
 
 if __name__ == '__main__':
     inputArray = getInput('./day16/input0.txt')
@@ -34,13 +55,21 @@ if __name__ == '__main__':
     
     orientation = '>'
 
-    for row in range(len(grid)):
-        for col in range(len(grid[0])):
-            if grid[row][col] == 'E':
-                end = row, col
-            if grid[row][col] == 'S':
-                start = row, col
-    bfsTraversal(grid, start, end)
+    [print(row) for row in grid]
+
+    start, end = findStartEnd(grid)
+
+    print(start, end)
+
+    shortestPath(grid, start, end)
+
+    # for row in range(len(grid)):
+    #     for col in range(len(grid[0])):
+    #         if grid[row][col] == 'E':
+    #             end = row, col
+    #         if grid[row][col] == 'S':
+    #             start = row, col
+    # bfsTraversal(grid, start, end)
     # print(start)
     # print(end)
 

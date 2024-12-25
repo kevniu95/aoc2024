@@ -90,6 +90,11 @@ ORIENTATION_MAP = {'>': (0, 1),
           '<': (0, -1),
           '^' : (-1, 0)}
 
+FLIP_ORIENTATION_MAP = {'>': '<',
+                        '<' : '>',
+                        'v' : '^',
+                        '^' : 'v'}
+
 ORIENTATION_MAP_FLIPPED = {v:k for k,v in ORIENTATION_MAP.items()}
 
 def calcDistanceToNeighbor(orientation: tuple[int, int], cellDir: tuple[int, int], curr_d) -> int:
@@ -132,28 +137,66 @@ def shortestPath(grid, start, end):
                         upsertCell(x1, y1, x, y, d, ORIENTATION_MAP_FLIPPED[(i, j)], cellDict, q, finished)
         ind += 1
             
-    return cellDict[(end[0], end[1])],cellDict, finished
+    return cellDict[(end[0], end[1])],cellDict, finished, o
+
+def goBackwards(grid, cell, o):
+    # Idea see if cell.d - p.d 
+    additional = set()
+    while cell:
+        if cell.x == 7 and cell.y == 5:
+            print("IAAMHERE")
+        print(cell)
+        p = cell.p
+        o = FLIP_ORIENTATION_MAP[cell.o]
+        dist_diff = cell.d - p.d
+        x, y = cell.x, cell.y
+        print(dist_diff)
+        for i, j in [(0,1),(0,-1),(-1,0),(1,0)]:
+            x1, y1 = x + i , y + j
+        # x = None
+            if 0 <= x1 < len(grid) and 0 <= y1 < len(grid[0]):
+                if grid[x1][y1] != '#':
+                    curr_d = currCell.d
+                    d = calcDistanceToNeighbor(o, (i, j), curr_d)
+                    this_d = d - curr_d
+                    if (this_d) == dist_diff:
+                        print(f"This difference at {x1, y1} is {this_d}")
+                        print(f"Original difference at {p.x, p.y} is {dist_diff}")
+                        if (x1, y1) != (p.x, p.y):
+                            print("Adding to additional")
+                            additional.add((x1, y1))
+        cell = cell.p
+                    
+                        
+    return finished
         
+
 if __name__ == '__main__':
-    inputArray = getInput('./day16/input1.txt')
+    inputArray = getInput('./day16/input0.txt')
     grid = processInput(inputArray)
     
     orientation = '>'
 
     # [print(row) for row in grid]
     start, end = findStartEnd(grid)
-    finalCell, cellDict, finished = shortestPath(grid, start, end)
+    finalCell, cellDict, finished, finalo = shortestPath(grid, start, end)
+
+    # for k, v in cellDict.items():
+    #     if k in finished:
+    #         print(k)
+    #         print(v)
+    #         print()
+
     
     currCell = finalCell
-    ct = 1
-    while currCell:
-        currCell = currCell.p
-        ct += 1
-        # cellDict.get((p.x, p.y))
-        # print(cellDict.get((currCell.x, currCell.y)))
-        # print(p)
-        # ct += 1
-    print(ct)
+    print(goBackwards(grid, currCell, finalo))
+    
+    # ct = 1
+    # while currCell:
+    #     currCell = currCell.p
+    #     ct += 1
+    #     print(currCell)
+    
         
     # for f in finished:
     #     print(cellDict[f])

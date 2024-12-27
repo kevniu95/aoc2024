@@ -3,8 +3,7 @@ from collections import deque
 
 def getInput(file_path: str):
     with open(file_path, 'r') as file:
-        data = file.readlines()
-    
+        data = file.readlines()    
     return data
 
 def processInput(data: list[str]) -> tuple[list[str], list[str]]:

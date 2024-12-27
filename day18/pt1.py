@@ -1,7 +1,5 @@
 
 from collections import deque
-import csv
-
 
 def getInput(file_path: str):
     with open(file_path, 'r') as file:
@@ -19,6 +17,7 @@ def initGrid():
         lines.append(line)
     return lines
     
+
 def placeBytes(byts: tuple[int, int], numBytes: int, grid: list[list[str]]):
     for byt in byts[:numBytes + 1]:
         x, y = byt.split(',')
@@ -47,7 +46,6 @@ def getToEnd(grid: list[list[int]]):
             if (x, y) == ((DIMS - 1), (DIMS - 1)):
                 return d + 1  
     return
-
 
 
 if __name__ == '__main__':

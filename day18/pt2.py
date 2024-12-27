@@ -1,6 +1,5 @@
 
 from collections import deque
-import csv
 
 
 def getInput(file_path: str):
@@ -19,6 +18,7 @@ def initGrid():
         lines.append(line)
     return lines
     
+
 def placeBytes(byts: tuple[int, int], numBytes: int, grid: list[list[str]]):
     for byt in byts[:numBytes + 1]:
         x, y = byt.split(',')
@@ -49,7 +49,6 @@ def getToEnd(grid: list[list[int]]):
     return
 
 
-
 if __name__ == '__main__':
     byts = getInput('./day18/input1.txt')
     DIMS = 71
@@ -74,4 +73,3 @@ if __name__ == '__main__':
             print(i)
             print(f"Last placed coordinate: {byts[i]}")
             break
-        

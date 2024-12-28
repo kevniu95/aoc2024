@@ -40,8 +40,6 @@ def processNumber(secretNumber: int) -> None:
                 BIG_DICT[tup] = BIG_DICT.get(tup, 0) + price
                 tupleSeenSet.add(tup)
 
-
-
 if __name__ == '__main__':
     data = getInput('./day22/input2.txt')
     secretNumbers = processInput(data)

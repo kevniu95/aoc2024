@@ -1,4 +1,5 @@
 from collections import defaultdict
+import time
 
 def getInput(file_path: str):
     with open(file_path, 'r') as file:
@@ -48,29 +49,22 @@ def walkPath(grid: list[list[str]],
                 
     return
 
-def evaluateCheats(grid: list[list[str]],
-             start: tuple[int, int], 
-             end: tuple[int, int],
-             path_cells: list[tuple[int, int]],
-             cell_dict: dict[tuple[int, int]],
-             cheat_dict: dict[tuple[int, int], list[int]]
-             ) -> None:
-    curr = start
-    for curr in path_cells:
-        for i in [(-1, 0),
-                  (1, 0),
-                  (0, 1),
-                  (0, -1)]:
-            x, y = curr[0] + i[0], curr[1] + i[1]
-            i2 = tuple(j * 2 for j in i)
-            x2, y2 = curr[0] + i2[0], curr[1] + i2[1]
-            if grid[x][y] == '#' and 0 <= x2 < len(grid) and 0 <= y2 < len(grid[0]) and (x2, y2) in cell_dict:
-                cheatGain = -(cell_dict[curr] - cell_dict[(x2, y2)]) - 2
-                if cheatGain > 0:
-                    cheat_dict[curr].append(cheatGain)
-                
-    return cheat_dict
 
+def countCheats(path_cells: list[tuple[int, int]], cell_dict: dict[tuple[int, int]]):
+    ct = 0
+    for i in range(len(path_cells)):
+        for j in range(i + 1, len(path_cells)):
+            cell1 = path_cells[i] 
+            cell2 = path_cells[j]
+
+            dist1 = cell_dict[cell1]
+            dist2 = cell_dict[cell2]
+
+            minDistanceBetweenCells = abs(cell1[0] - cell2[0]) + abs(cell1[1] - cell2[1])
+            if 100 <= dist2 - dist1 - minDistanceBetweenCells and minDistanceBetweenCells <= 20:
+                ct += 1
+    return ct
+    
 
 if __name__ == '__main__':
     data = getInput('./day20/input1.txt')
@@ -82,13 +76,7 @@ if __name__ == '__main__':
     path_cells: list[tuple[int, int]] = []
     cell_dict: dict[tuple[int, int], int] = {}
     cheat_dict: dict[tuple[int, int], int] = defaultdict(list)
-    
-    
+        
     walkPath(grid, start, end, path_cells, cell_dict)
 
-    cheat_dict = evaluateCheats(grid, start, end, path_cells, cell_dict, cheat_dict)
-    
-    finalList = []
-    for k, v in cheat_dict.items():
-        finalList.extend([i for i in v if i >= 100])
-    print(len(finalList))
+    print(countCheats(path_cells, cell_dict))
